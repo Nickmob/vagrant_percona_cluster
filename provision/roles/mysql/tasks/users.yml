@@ -1,0 +1,12 @@
+---
+
+- name: "Make sure the MySQL users are present"
+  mysql_user:
+    name: "{{ item.name }}"
+    password: "{{ item.pass | default('pass') }}"
+    priv: "{{ item.priv | default('*.*:ALL') }}"
+    state: "present"
+    host: "{{ item.host | default('localhost') }}"
+    login_unix_socket: "{% if ansible_os_family in ['RedHat', 'Rocky'] %}/var/lib/mysql/mysql.sock{% else %}/var/run/mysqld/mysqld.sock{% endif %}"
+  with_items: "{{ mysql_users }}"
+  no_log: "true"

@@ -1,0 +1,4 @@
+[mysqlservers]
+pxc1  ansible_ssh_host=10.0.26.201 vm_name=pxc1 ansible_ssh_private_key_file=../.vagrant/machines/pxc1/virtualbox/private_key
+pxc2  ansible_ssh_host=10.0.26.202 vm_name=pxc2 ansible_ssh_private_key_file=../.vagrant/machines/pxc2/virtualbox/private_key
+pxc3  ansible_ssh_host=10.0.26.203 vm_name=pxc3 ansible_ssh_private_key_file=../.vagrant/machines/pxc3/virtualbox/private_key

@@ -1,0 +1,71 @@
+---
+
+- name: "Check if /root/.my.cnf file exists if installing >= 5.7 on Red Hat (to determine if new install)"
+  stat:
+    path: "/root/.my.cnf"
+  register: root_my_cnf_stat
+  when:
+    - mysql_version is version('5.7', '>=')
+    - ansible_os_family in ['RedHat', 'Rocky']
+
+- name: "Percona >= 5.7 new install measures (Red Hat)"
+  block:
+    - name: "Parse temporary password from mysql log, getting last one"
+      shell: "cat /var/log/mysqld.log | sed -n 's/.*temporary password is generated for root@localhost: //p' | tail -n1"
+      register: temppass
+
+    # Set root@localhost password
+    # (mysql_user module can't be used here, got error 1862 'Your password has expired. To log in you must change it using a client that supports expired passwords.')
+    # escape single quotes in shell with '' not \'
+    - name: "Set root password (using temp password to log in)"
+      shell: 'mysql -e "SET PASSWORD = ''{{ mysql_root_password }}'';" --connect-expired-password -uroot -p"{{ temppass.stdout }}"'
+
+    - name: "Red Hat: Copy .my.cnf file into the root home folder after initial root password changed"
+      template:
+        src: root-my-cnf.j2
+        dest: /root/.my.cnf
+        owner: root
+        group: root
+        mode: 0600
+  when:
+    - mysql_version is version('5.7', '>=')
+    - ansible_os_family in ['RedHat', 'Rocky']
+    - root_my_cnf_stat.stat.exists == False
+
+- name: "Set the root password"
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ mysql_root_password }}"
+    check_implicit_admin: yes
+    state: present
+    login_unix_socket: "{% if ansible_os_family in ['RedHat', 'Rocky'] %}/var/lib/mysql/mysql.sock{% else %}/var/run/mysqld/mysqld.sock{% endif %}"
+
+  with_items:
+    - "{{ ansible_hostname }}"
+    - "127.0.0.1"
+    - "::1"
+    - "localhost"
+
+- name: "Copy .my.cnf file into the root home folder"
+  template:
+    src: root-my-cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: "Ensure anonymous users are not in the database"
+  mysql_user:
+    name: ''
+    host: "{{ item }}"
+    state: absent
+    login_unix_socket: "{% if ansible_os_family in ['RedHat', 'Rocky'] %}/var/lib/mysql/mysql.sock{% else %}/var/run/mysqld/mysqld.sock{% endif %}"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - "localhost"
+
+- name: "Remove the test database"
+  mysql_db:
+    name: test
+    state: absent

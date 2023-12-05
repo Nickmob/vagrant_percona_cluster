@@ -1,0 +1,61 @@
+---
+
+# Version to install, defaulting to 5.6
+# - Although 5.6 is already in ES(Extended Support) phase, to prevent issues 
+#   with existing installations, do not increase default version for now
+#   (to avoid potentially breaking the target on a redeploy, because some
+#    distros require a purge of old Percona pkgs before installing a new version)
+# - For Ubuntu >= 20.04: set default to 5.7 (because 5.6 packages do not exist)
+
+mysql_version_major: "8"
+mysql_version_minor: "0"
+mysql_version: "{{ mysql_version_major|int }}.{{ mysql_version_minor|int }}"
+
+# Basic settings
+mysql_root_password: "1"
+mysql_port: "3306"
+mysql_bind_address: "0.0.0.0"
+mysql_language: "/usr/share/mysql/"
+mysql_datadir: "/var/lib/mysql"
+
+# Fine tuning
+mysql_key_buffer: "8M"
+mysql_max_allowed_packet: "256M"
+mysql_thread_stack: "192K"
+mysql_cache_size: "8"
+mysql_myisam_recover: "BACKUP"
+mysql_max_connections: "500"
+mysql_table_cache: "200"
+mysql_thread_concurrency: "8"
+mysql_query_cache_limit: "1M"
+mysql_query_cache_size: "16M"
+mysql_character_set_server: "utf8mb4"
+mysql_collation_server: "utf8mb4_ru_0900_as_cs"
+mysql_mysqldump_max_allowed_packet: "128M"
+mysql_isamchk_key_buffer: "16M"
+mysql_sort_buffer_size: "256K"
+
+# InnoDB tuning
+mysql_innodb_file_per_table: "1"
+mysql_innodb_flush_method: "fdatasync"
+mysql_innodb_buffer_pool_size: "256M"
+mysql_innodb_flush_log_at_trx_commit: "2"
+mysql_innodb_lock_wait_timeout: "50"
+mysql_innodb_log_buffer_size: "1M"
+mysql_innodb_log_file_size: "64M"
+
+mysql_character_set_client_handshake: "FALSE"
+
+mysql_timezone_info: "false"
+
+mysql_databases: []
+mysql_users: []
+
+install_rpm_repositories: "true"
+
+# To disable log_bin in percona >=8, enabled by default
+mysql_disable_log_bin: "true"
+
+# Default Auth Plugin
+# used in templates when Percona Server >= 5.7
+mysql_default_authentication_plugin: "caching_sha2_password"
