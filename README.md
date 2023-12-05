@@ -1,16 +1,17 @@
-# vagrant-mysql-repl
-Стенд для настройки репликации MySQL
+# PXC кластер с Vagrant и Ansible
+Стенд для настройки Percona XtraDB Cluster
 
 Дистрибутив: Ubuntu 22.04.
 
 Запуск двух машин:
 
-* mysql1: 10.0.26.101
-* mysql2: 10.0.26.102
+* pxc1: 10.0.26.201
+* pxc2: 10.0.26.202
+* pxc3: 10.0.26.203
 
 Перед запуском нужно разрешить диапазон адресов 10.0.* для частных сетей.
 
-По умолчанию устанавливается Percona Server for MySQL 8.0 из репозиториев Percona.
+По умолчанию устанавливается PXC 8.0 из репозиториев Percona.
 
 Основные настройки находятся в файле: provision/roles/mysql/defaults/main.yml
 
@@ -22,5 +23,5 @@ vagrant up
 cd provision
 ansible-playbook playbooks/environment.yml
 
-vagrant ssh mysql1
+vagrant ssh pxc1
 ```
