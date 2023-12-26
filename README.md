@@ -24,4 +24,21 @@ cd provision
 ansible-playbook playbooks/environment.yml
 
 vagrant ssh pxc1
+
+```
+Для корректного подключения не забыть синхронизировать SSL-ключи и сертификаты:
+
+```
+on pxc1
+
+mkdir -p /vagrant/ssl
+cp /var/lib/mysql/server-key.pem /vagrant/ssl
+cp /var/lib/mysql/ca.pem /vagrant/ssl
+cp /var/lib/mysql/server-cert.pem /vagrant/ssl
+
+on pxc2 pxc3
+
+cp -r /vagrant/ssl/ /var/lib/mysql/
+chown -R mysql:mysql /var/lib/mysql
+
 ```
