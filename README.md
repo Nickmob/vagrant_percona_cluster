@@ -38,7 +38,7 @@ cp /var/lib/mysql/server-cert.pem /vagrant/ssl
 
 on pxc2 pxc3
 
-cp -r /vagrant/ssl/ /var/lib/mysql/
+cp -r /vagrant/ssl/* /var/lib/mysql/
 chown -R mysql:mysql /var/lib/mysql
 
 ```
