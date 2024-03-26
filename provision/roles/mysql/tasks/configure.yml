@@ -30,3 +30,11 @@
     - config_file.changed
     - mysql_service is defined
     - not mysql_service.changed
+
+- name: Copy the same SSL certs to all nodes (./ssl dir from project)
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../ssl/"
+    dest: /var/lib/mysql/
+    owner: mysql
+    group: mysql
+    mode: u=rw,g=rw,o=
