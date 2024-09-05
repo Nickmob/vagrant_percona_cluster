@@ -1,7 +1,7 @@
 ---
 
 - name: "Check if /root/.my.cnf file exists if installing >= 5.7 on Red Hat (to determine if new install)"
-  stat:
+  ansible.builtin.stat:
     path: "/root/.my.cnf"
   register: root_my_cnf_stat
   when:
@@ -33,11 +33,11 @@
     - root_my_cnf_stat.stat.exists == False
 
 - name: "Set the root password"
-  mysql_user:
+  community.mysql.mysql_user:
     name: root
     host: "{{ item }}"
     password: "{{ mysql_root_password }}"
-    check_implicit_admin: yes
+    check_implicit_admin: true
     state: present
     login_unix_socket: "{% if ansible_os_family in ['RedHat', 'Rocky'] %}/var/lib/mysql/mysql.sock{% else %}/var/run/mysqld/mysqld.sock{% endif %}"
 

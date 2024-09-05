@@ -1,19 +1,16 @@
 ---
-# Installation tasks for Ubuntu
-# https://www.percona.com/doc/percona-server/5.7/installation/apt_repo.html
-# https://www.percona.com/doc/percona-server/8.0/installation/apt_repo.html
 
 - name: "Install gnupg"
-  apt:
+  ansible.builtin.apt:
     name: gnupg2
     update_cache: yes
 
 - name: "Install percona-release package"
-  apt:
+  ansible.builtin.apt:
     deb: "https://repo.percona.com/apt/percona-release_latest.{{ ansible_distribution_release }}_all.deb"
 
 - name: "Update apt cache"
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
 
 - name: "Configure Percona repo for PXC"
@@ -23,7 +20,7 @@
   ansible.builtin.shell: percona-release enable tools release
 
 - name: "Update apt cache"
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
 
 # https://www.percona.com/doc/percona-server/LATEST/installation/apt_repo.html
@@ -33,22 +30,22 @@
 #  changed_when: False     # TODO: check for task idempotency
 
 - name: "Install python-is-python3 (Ubuntu >= Focal/20.04)"
-  apt:
+  ansible.builtin.apt:
     name: "python-is-python3"
   when:
     - ansible_distribution_version is version_compare('20.04', '>=')
 
-- debug:
+- ansible.builtin.debug:
     msg: "ansible_python_interpreter major version: {{ ansible_python.version.major }}"
 
 - name: "Install package dependencies for ansible MySQL modules (python 2)"
-  apt:
+  ansible.builtin.apt:
     name: "python-mysqldb"
   when:
     - ansible_python.version.major == 2     # version is a number, do not quote
 
 - name: "Install package dependencies for ansible MySQL modules (python 3)"
-  apt:
+  ansible.builtin.apt:
     name: 
       - "python3-pymysql"
       - "python3-mysqldb"
@@ -56,7 +53,7 @@
     - ansible_python.version.major == 3     # version is a number, do not quote
 
 - name: "Install percona cluster packages, ProxySQL and dependencies on Ubuntu"
-  apt:
+  ansible.builtin.apt:
     name:
       - "percona-xtradb-cluster"
       - "percona-xtradb-cluster-client"
@@ -65,7 +62,7 @@
   when: mysql_version_major|int >= 8
 
 - name: "Install mc, percona-toolkit and Percona Xtrabackup"
-  apt:
+  ansible.builtin.apt:
     name:
       - percona-xtrabackup-80
       - mc
@@ -75,7 +72,7 @@
     update_cache: yes
 
 - name: "Adjust permissions of datadir"
-  file:
+  ansible.builtin.file:
     path: "{{ mysql_datadir }}"
     owner: "mysql"
     group: "mysql"
